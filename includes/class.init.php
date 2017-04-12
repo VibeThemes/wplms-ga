@@ -20,6 +20,7 @@ class WPLMS_GA {
 		add_action('wplms_unit_header',array($this,'unit_quiz_tracking'),10,2);
 		add_action('wp_ajax_quiz_question',array($this,'track_question'));
 
+		add_filter('wplms_take_this_course_button_label',array($this,'trigger_take_this_course_event'),10,2);
 	}
 
 	function ga_account_id(){
@@ -94,6 +95,19 @@ class WPLMS_GA {
 		<?php
 	}
 
+
+	function trigger_take_this_course_event($label,$course_id){
+		?>
+		<script>
+		jQuery(document).ready(function($){
+			$('.course_button').on('click',function(){
+				ga('wplms.send', 'event', 'take_course', '<?php echo get_the_title($course_id); ?>', '<?php echo $label; ?>', 50);
+			});
+		});
+		</script>
+		<?php
+		return $label;
+	}
 }
 
 WPLMS_GA::init();
