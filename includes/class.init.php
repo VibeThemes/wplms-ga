@@ -1,6 +1,6 @@
 <?php
 
- if ( ! defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 class WPLMS_GA {
 
@@ -21,10 +21,18 @@ class WPLMS_GA {
 		add_action('wp_ajax_quiz_question',array($this,'track_question'));
 
 		add_filter('wplms_take_this_course_button_label',array($this,'trigger_take_this_course_event'),10,2);
+		add_filter('lms_general_settings',array($this,'wplms_get_ga_user_tracking_id'),10,1);
 	}
 
 	function ga_account_id(){
-		return 'UA-97194768-1';
+
+		if(class_exists('WPLMS_tips')){
+			$tips = WPLMS_tips::init();
+			if(isset($tips) && isset($tips->settings) && isset($tips->settings['wplms_ga_tracking_id'])){
+				return $tips->settings['wplms_ga_tracking_id']);
+			}
+		}
+		return '';
 	}
 
 	function ga_head(){
@@ -32,10 +40,14 @@ class WPLMS_GA {
 		//Check if wplms theme is active
 		if(!function_exists('vibe_get_option'))
 			return;
+		
+		$ga_id = $this->ga_account_id();
+		if(empty($ga_id))
+			return;
 		?>
 		<script>
 			window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-			ga('create', '<?php echo $this->ga_account_id(); ?>', 'none','wplms');
+			ga('create', '<?php echo $ga_id ?>', 'none','wplms');
 			ga('wplms.send', 'pageview');
 		</script>
 		<?php
@@ -77,10 +89,6 @@ class WPLMS_GA {
 
 	function track_question(){
 
-		//Check if wplms theme is active
-		if(!function_exists('vibe_get_option'))
-			return;
-
 		$quiz_id = $_POST['quiz_id'];
         $ques_id = $_POST['ques_id'];
 
@@ -107,6 +115,21 @@ class WPLMS_GA {
 		</script>
 		<?php
 		return $label;
+	}
+
+	function wplms_get_ga_user_tracking_id($settings){
+		$settings[] = array(
+			'label'=>__('Google Analytics Settings','' ),
+			'type'=> 'heading',
+		);
+
+		$settings[] = array(
+	            'label' => __('Add G.A. Tracking ID','wplms-ga'),
+	            'name' => 'wplms_ga_tracking_id',
+	            'desc' => __('Add your Google Analytic tracking ID here.','wplms-ga'),
+	            'type' => 'text',
+			);
+		return $settings;
 	}
 }
 
