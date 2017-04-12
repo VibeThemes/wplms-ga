@@ -1,5 +1,5 @@
 === WPLMS GA ===
-Contributors: H.k.Latiyan
+Contributors: vibethemes, hklatiyan
 Tags: ga, google analytics, wplms, wplms ga
 Requires at least: 3.6
 Tested up to: 4.7.3

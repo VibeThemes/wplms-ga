@@ -119,7 +119,7 @@ class WPLMS_GA {
 
 	function wplms_get_ga_user_tracking_id($settings){
 		$settings[] = array(
-			'label'=>__('Google Analytics Settings','' ),
+			'label'=>__('Google Analytics Settings','wplms-ga' ),
 			'type'=> 'heading',
 		);
 
