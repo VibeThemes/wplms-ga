@@ -17,7 +17,9 @@ class WPLMS_GA {
 		add_action('wp_head',array($this,'ga_head'));
 		add_action('wp_footer',array($this,'ga_footer'));
 
-		add_action('wplms_unit_header',array($this,'unit_tracking'),10,2);
+		add_action('wplms_unit_header',array($this,'unit_quiz_tracking'),10,2);
+		add_action('wp_ajax_quiz_question',array($this,'track_question'));
+
 	}
 
 	function ga_account_id(){
@@ -48,7 +50,7 @@ class WPLMS_GA {
 		<?php
 	}
 
-	function unit_tracking($unit_id,$course_id){
+	function unit_quiz_tracking($id,$course_id){
 
 		//Check if wplms theme is active
 		if(!function_exists('vibe_get_option'))
@@ -63,7 +65,7 @@ class WPLMS_GA {
 		$slug = get_post_field('post_name',$course_status);
 
 		$site_link = home_url();
-		$permalink = get_permalink($unit_id);
+		$permalink = get_permalink($id);
 		$ref = str_replace($site_link,'',$permalink);
 		?>
 		<script>
@@ -71,6 +73,27 @@ class WPLMS_GA {
 		</script>
 		<?php
 	}
+
+	function track_question(){
+
+		//Check if wplms theme is active
+		if(!function_exists('vibe_get_option'))
+			return;
+
+		$quiz_id = $_POST['quiz_id'];
+        $ques_id = $_POST['ques_id'];
+
+		$slug = get_post_field('post_name',$quiz_id);
+		$site_link = home_url();
+		$permalink = get_permalink($ques_id);
+		$ref = str_replace($site_link,'',$permalink);
+		?>
+		<script>
+			ga('wplms.send', 'pageview', '<?php echo '/'.$slug.$ref; ?>');
+		</script>
+		<?php
+	}
+
 }
 
 WPLMS_GA::init();
