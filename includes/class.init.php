@@ -29,7 +29,7 @@ class WPLMS_GA {
 		if(class_exists('WPLMS_tips')){
 			$tips = WPLMS_tips::init();
 			if(isset($tips) && isset($tips->settings) && isset($tips->settings['wplms_ga_tracking_id'])){
-				return $tips->settings['wplms_ga_tracking_id']);
+				return $tips->settings['wplms_ga_tracking_id'];
 			}
 		}
 		return '';
