@@ -35,6 +35,17 @@ class WPLMS_GA {
 		return '';
 	}
 
+	function ga_anonymise_ip(){
+
+		if(class_exists('WPLMS_tips')){
+			$tips = WPLMS_tips::init();
+			if(isset($tips) && isset($tips->settings) && isset($tips->settings['wplms_ga_anonymise_ip'])){
+				return $tips->settings['wplms_ga_anonymise_ip'];
+			}
+		}
+		return '';
+	}
+	
 	function ga_head(){
 		
 		//Check if wplms theme is active
@@ -44,10 +55,20 @@ class WPLMS_GA {
 		$ga_id = $this->ga_account_id();
 		if(empty($ga_id))
 			return;
+
+		$anonymizeIp = $this->ga_anonymise_ip();
 		?>
 		<script>
 			window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
 			ga('create', '<?php echo $ga_id ?>', 'none','wplms');
+			<?php
+			if(!empty($anonymizeIp)){
+				?>
+				<script>ga('set', 'anonymizeIp', true);</script>
+				<?php
+			}
+			?>
+			<script>
 			ga('wplms.send', 'pageview');
 		</script>
 		<?php
@@ -128,6 +149,12 @@ class WPLMS_GA {
 	            'name' => 'wplms_ga_tracking_id',
 	            'desc' => __('Add your Google Analytic tracking ID here.','wplms-ga'),
 	            'type' => 'text',
+			);
+		$settings[] = array(
+	            'label' => __('Anonymise IP ','wplms-ga'),
+	            'name' => 'wplms_ga_anonymise_ip',
+	            'desc' => __('Restrict GooGle analytics from recording your visitors IP','wplms-ga'),
+	            'type' => 'checkbox',
 			);
 		return $settings;
 	}
